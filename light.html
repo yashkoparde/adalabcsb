@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Code::Blocks Program Viewer</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #0078d7;
+      font-family: Inter, sans-serif;
+      height: 100vh;
+      overflow: hidden;
+      margin: 0;
+    }
+
+    .window {
+      width: 100vw;
+      height: 100vh;
+      background: #f2f2f2;
+      border: 1px solid #8b8b8b;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .title-bar {
+      background: linear-gradient(to bottom, #0078d7, #0067b8);
+      color: white;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px;
+      border-bottom: 1px solid #b8b8b8;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .window-controls {
+      display: flex;
+      gap: 0;
+      height: 100%;
+    }
+
+    .btn {
+      width: 46px;
+      height: 34px;
+      border-radius: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: white;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .btn:hover {
+      background: rgba(255,255,255,0.15);
+    }
+
+    .red::before { content: '✕'; }
+    .yellow::before { content: '—'; }
+    .green::before { content: '▢'; }
+
+    .menu-bar {
+      background: #f5f5f5;
+      border-bottom: 1px solid #cfcfcf;
+      display: flex;
+      gap: 22px;
+      padding: 6px 14px;
+      font-size: 13px;
+    }
+
+    .toolbar {
+      background: #ededed;
+      border-bottom: 1px solid #c8c8c8;
+      padding: 7px 12px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .tool-icon {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(to bottom, #ffffff, #dcdcdc);
+      border: 1px solid #a8a8a8;
+      border-radius: 3px;
+      position: relative;
+    }
+
+    .tool-icon::after {
+      content: '';
+      position: absolute;
+      inset: 6px;
+      background: #4f81bd;
+      border-radius: 2px;
+    }
+
+    .main {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    .sidebar {
+      width: 280px;
+      background: #ececec;
+      border-right: 1px solid #c4c4c4;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-header {
+      padding: 10px 12px;
+      background: #dcdcdc;
+      font-size: 13px;
+      font-weight: 600;
+      border-bottom: 1px solid #c0c0c0;
+    }
+
+    .project-tree {
+      padding: 10px;
+      overflow-y: auto;
+      font-size: 14px;
+    }
+
+    .folder {
+      margin-bottom: 10px;
+    }
+
+    .folder-title {
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #333;
+    }
+
+    .file {
+      padding: 8px 10px;
+      border-radius: 5px;
+      margin-bottom: 5px;
+      cursor: pointer;
+      transition: 0.2s;
+      color: #333;
+    }
+
+    .file:hover {
+      background: #d8e7ff;
+    }
+
+    .file.active {
+      background: #b7d3ff;
+      font-weight: 600;
+    }
+
+    .editor-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .tabs {
+      height: 40px;
+      background: #e7e7e7;
+      border-bottom: 1px solid #c5c5c5;
+      display: flex;
+      align-items: end;
+      padding-left: 10px;
+      overflow-x: auto;
+    }
+
+    .tab {
+      background: #d4d4d4;
+      padding: 10px 18px;
+      border: 1px solid #b9b9b9;
+      border-bottom: none;
+      margin-right: 5px;
+      border-top-left-radius: 6px;
+      border-top-right-radius: 6px;
+      font-size: 13px;
+    }
+
+    .tab.active {
+      background: white;
+      font-weight: 600;
+    }
+
+    .editor {
+      flex: 1;
+      background: #ffffff;
+      overflow: auto;
+      position: relative;
+    }
+
+    .code-container {
+      position: relative;
+    }
+
+    .code-container {
+      display: none;
+      min-height: 100%;
+    }
+
+    .code-container.active {
+      display: flex;
+    }
+
+    .line-numbers {
+      background: #f1f1f1;
+      border-right: 1px solid #d3d3d3;
+      color: #8a8a8a;
+      padding: 18px 12px;
+      text-align: right;
+      user-select: none;
+      min-width: 55px;
+      font-family: 'Fira Code', monospace;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 14px;
+      right: 20px;
+      background: #2d89ef;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+      z-index: 10;
+    }
+
+    .copy-btn:hover {
+      background: #166fd1;
+    }
+
+    pre {
+      flex: 1;
+      margin: 0;
+      padding: 18px 22px;
+      overflow: auto;
+      font-family: 'Fira Code', monospace;
+      font-size: 14px;
+      line-height: 1.8;
+      white-space: pre-wrap;
+      color: #222;
+      background: white;
+    }
+
+    .status-bar {
+      height: 28px;
+      background: #e2e2e2;
+      border-top: 1px solid #c6c6c6;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      font-size: 12px;
+      color: #333;
+    }
+
+    @media (max-width: 1200px) {
+      .window {
+        width: 100%;
+        height: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="window">
+
+    <div class="title-bar">
+      <div>Code::Blocks 20.03 - Untitled Workspace</div>
+      <div class="window-controls">
+        <div class="btn yellow"></div>
+        <div class="btn green"></div>
+        <div class="btn red"></div>
+      </div>
+    </div>
+
+    <div class="menu-bar">
+      <div>File</div>
+      <div>Edit</div>
+      <div>View</div>
+      <div>Search</div>
+      <div>Project</div>
+      <div>Build</div>
+      <div>Debug</div>
+      <div>Plugins</div>
+      <div>Settings</div>
+      <div>Help</div>
+    </div>
+
+    <div class="toolbar">
+      <div style="font-size:13px;color:#444;font-weight:600;margin-right:8px;">Build:</div>
+      <div class="tool-icon" title="New"></div>
+      <div class="tool-icon" title="Open"></div>
+      <div class="tool-icon" title="Save"></div>
+      <div class="tool-icon" title="Compile"></div>
+      <div class="tool-icon" title="Run"></div>
+      <div class="tool-icon" title="Debug"></div>
+      <div class="tool-icon" title="Search"></div>
+      <div class="tool-icon" title="Settings"></div>
+    </div>
+
+    <div class="main">
+
+      <div class="sidebar">
+        <div class="sidebar-header">Management</div>
+
+        <div class="project-tree">
+          <div class="folder">
+            <div class="folder-title">📁 Programs</div>
+
+            <div class="file active" onclick="openProgram('p1', this)">📄 P1.cpp</div>
+            <div class="file" onclick="openProgram('p2', this)">📄 P2.cpp</div>
+            <div class="file" onclick="openProgram('p3', this)">📄 P3.cpp</div>
+            <div class="file" onclick="openProgram('p4', this)">📄 P4.cpp</div>
+            <div class="file" onclick="openProgram('p5', this)">📄 P5.cpp</div>
+            <div class="file" onclick="openProgram('p6', this)">📄 P6.cpp</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="editor-section">
+
+        <div class="tabs">
+          <div class="tab active" id="tab-p1">P1.cpp</div>
+          <div class="tab" id="tab-p2">P2.cpp</div>
+          <div class="tab" id="tab-p3">P3.cpp</div>
+          <div class="tab" id="tab-p4">P4.cpp</div>
+          <div class="tab" id="tab-p5">P5.cpp</div>
+          <div class="tab" id="tab-p6">P6.cpp</div>
+        </div>
+
+        <div class="editor">
+
+          <!-- P1 -->
+          <div class="code-container active" id="p1">
+            <div class="line-numbers">
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+            </div>
+
+<button class="copy-btn" onclick="copyCode('code-p1')">Copy</button>
+
+<pre id="code-p1">
+// =========================
+// P1 PROGRAM HERE
+// Paste your code below
+// =========================
+
+
+
+
+
+
+
+
+
+
+</pre>
+          </div>
+
+          <!-- P2 -->
+          <div class="code-container" id="p2">
+            <div class="line-numbers">
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+            </div>
+
+<button class="copy-btn" onclick="copyCode('code-p2')">Copy</button>
+
+<pre id="code-p2">
+// =========================
+// P2 PROGRAM HERE
+// Paste your code below
+// =========================
+
+
+
+
+
+
+
+
+
+
+</pre>
+          </div>
+
+          <!-- P3 -->
+          <div class="code-container" id="p3">
+            <div class="line-numbers">
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+            </div>
+
+<button class="copy-btn" onclick="copyCode('code-p3')">Copy</button>
+
+<pre id="code-p3">
+// =========================
+// P3 PROGRAM HERE
+// Paste your code below
+// =========================
+
+
+
+
+
+
+
+
+
+
+</pre>
+          </div>
+
+          <!-- P4 -->
+          <div class="code-container" id="p4">
+            <div class="line-numbers">
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+            </div>
+
+<button class="copy-btn" onclick="copyCode('code-p4')">Copy</button>
+
+<pre id="code-p4">
+// =========================
+// P4 PROGRAM HERE
+// Paste your code below
+// =========================
+
+
+
+
+
+
+
+
+
+
+</pre>
+          </div>
+
+          <!-- P5 -->
+          <div class="code-container" id="p5">
+            <div class="line-numbers">
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+            </div>
+
+<button class="copy-btn" onclick="copyCode('code-p5')">Copy</button>
+
+<pre id="code-p5">
+// =========================
+// P5 PROGRAM HERE
+// Paste your code below
+// =========================
+
+
+
+
+
+
+
+
+
+
+</pre>
+          </div>
+
+          <!-- P6 -->
+          <div class="code-container" id="p6">
+            <div class="line-numbers">
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+            </div>
+
+<button class="copy-btn" onclick="copyCode('code-p6')">Copy</button>
+
+<pre id="code-p6">
+// =========================
+// P6 PROGRAM HERE
+// Paste your code below
+// =========================
+
+
+
+
+
+
+
+
+
+
+</pre>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="status-bar">
+      <div>Ready</div>
+      <div>UTF-8 | C++ Source File</div>
+    </div>
+  </div>
+
+  <script>
+    function copyCode(id) {
+      const text = document.getElementById(id).innerText;
+
+      navigator.clipboard.writeText(text)
+        .then(() => {
+          const btn = event.target;
+          const oldText = btn.innerText;
+          btn.innerText = 'Copied!';
+
+          setTimeout(() => {
+            btn.innerText = oldText;
+          }, 1500);
+        })
+        .catch(() => {
+          alert('Failed to copy code.');
+        });
+    }
+
+    function openProgram(id, element) {
+
+      document.querySelectorAll('.code-container').forEach(box => {
+        box.classList.remove('active');
+      });
+
+      document.querySelectorAll('.file').forEach(file => {
+        file.classList.remove('active');
+      });
+
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+
+      document.getElementById(id).classList.add('active');
+      element.classList.add('active');
+      document.getElementById('tab-' + id).classList.add('active');
+    }
+  </script>
+
+</body>
+</html>
