@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ADA Lab Outputs</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #0f172a;
+      color: white;
+      font-family: Inter, sans-serif;
+      padding: 40px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 40px;
+      font-size: 52px;
+      color: #93c5fd;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      display: grid;
+      gap: 28px;
+    }
+
+    .card {
+      background: #111827;
+      border: 1px solid #1e293b;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    }
+
+    .card-header {
+      background: #1e293b;
+      padding: 18px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #bfdbfe;
+    }
+
+    .copy-btn {
+      background: #2563eb;
+      border: none;
+      color: white;
+      padding: 10px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+
+    .copy-btn:hover {
+      background: #1d4ed8;
+    }
+
+    pre {
+      margin: 0;
+      padding: 24px;
+      overflow-x: auto;
+      font-family: 'Fira Code', monospace;
+      font-size: 14px;
+      line-height: 1.8;
+      color: #d1d5db;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>ADA Lab Outputs</h1>
+
+  <div class="container">
+
+    <!-- P1 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="title">P1 Output</div>
+        <button class="copy-btn" onclick="copyOutput('p1')">Copy</button>
+      </div>
+
+<pre id="p1">
+/*
+
+Output:
+
+Enter the n value:5
+
+Enter the graph data:
+1 3 4 6 2
+1 7 6 9 3
+5 2 8 99 45
+1 44 66 33 6
+12 4 3 2 0
+
+Cost of spanning tree is=11
+
+Edgesof spanning tree are:
+2 -> 1
+1 -> 5
+3 -> 2
+1 -> 4
+
+*/
+</pre>
+    </div>
+
+    <!-- P2 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="title">P2 Output</div>
+        <button class="copy-btn" onclick="copyOutput('p2')">Copy</button>
+      </div>
+
+<pre id="p2">
+/*
+
+Output:
+
+Enter n value:4
+
+Enter the graph data:
+4 5 2 1
+7 5 9 2
+1 7 6 9
+0 2 8 5
+
+Enter the souce node:4
+
+4 -> 1 sum=0
+4 -> 2 sum=2
+1 -> 3 sum=4
+
+Cost=4
+
+*/
+</pre>
+    </div>
+
+    <!-- P3 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="title">P3 Output</div>
+        <button class="copy-btn" onclick="copyOutput('p3')">Copy</button>
+      </div>
+
+<pre id="p3">
+/*
+
+Output:
+
+Enter the n value:4
+
+Enter the graph data:
+0 999 3 999
+2 0 999 999
+999 7 0 1
+6 999 999 0
+
+Shortest path matrix
+
+0 10 3 4
+2 0 5 6
+7 7 0 1
+6 16 9 0
+
+*/
+</pre>
+    </div>
+
+    <!-- P4 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="title">P4 Output</div>
+        <button class="copy-btn" onclick="copyOutput('p4')">Copy</button>
+      </div>
+
+<pre id="p4">
+/*
+
+Output:
+
+Enter n value:4
+
+Enter the graph data:
+444 767 987 12
+999 87 56 45
+1 0 999 678
+444 678 235 0
+
+Enter the souce node:1
+
+Shortest distance from 1 to 1 is 444
+Shortest distance from 1 to 2 is 247
+Shortest distance from 1 to 3 is 247
+Shortest distance from 1 to 4 is 12
+
+*/
+</pre>
+    </div>
+
+    <!-- P5 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="title">P5 Output</div>
+        <button class="copy-btn" onclick="copyOutput('p5')">Copy</button>
+      </div>
+
+<pre id="p5">
+/*
+
+Output:
+
+Enter the n value:4
+
+Enter the graph data:
+0 1 1 0
+0 0 1 1
+0 0 0 1
+0 0 0 0
+
+Topological ordering is:
+1 2 3 4
+
+*/
+</pre>
+    </div>
+
+    <!-- P6 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="title">P6 Output</div>
+        <button class="copy-btn" onclick="copyOutput('p6')">Copy</button>
+      </div>
+
+<pre id="p6">
+/*
+
+Output:
+
+Enter the no. of objects:4
+
+Enter the knapsack capacity:5
+
+Enter profit followed by weight:
+1 2 3
+4 3 5
+4 5 2
+5 5 3
+
+Max profit=100
+
+*/
+</pre>
+    </div>
+
+  </div>
+
+  <script>
+    function copyOutput(id) {
+      const text = document.getElementById(id).innerText;
+
+      navigator.clipboard.writeText(text)
+        .then(() => {
+          alert('Output copied successfully!');
+        });
+    }
+  </script>
+
+</body>
+</html>
